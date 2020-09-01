@@ -1,8 +1,8 @@
 {
   "name": "codegolf-backend",
   "version": "1.0.0",
-  "description": "[![csivit][csivitu-shield]][csivitu-url] <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section --> [![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-) <!-- ALL-CONTRIBUTORS-BADGE:END --> [![Issues][issues-shield]][issues-url]",
-  "main": "index.js",
+  "description": "Backend for a CodeBAsh Platform",
+  "main": "server.js",
   "dependencies": {
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
@@ -10,15 +10,11 @@
     "mongoose": "^5.10.2"
   },
   "devDependencies": {
-    "eslint": "^7.8.0",
-    "eslint-config-airbnb": "^18.2.0",
-    "eslint-config-prettier": "^6.11.0",
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.6",
     "husky": "^4.2.5",
-    "prettier": "^2.1.1"
+    "nodemon": "^2.0.4"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
