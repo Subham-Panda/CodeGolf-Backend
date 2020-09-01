@@ -17,12 +17,20 @@
     "eslint-plugin-jsx-a11y": "^6.3.1",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.20.6",
+    "husky": "^4.2.5",
     "prettier": "^2.1.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -r esm server.js",
-    "start": "node -r esm server.js"
+    "dev": "nodemon -r esm ./src/server.js",
+    "start": "node -r esm ./src/server.js",
+    "lint": "eslint \"src/**/*.{ts,js,jsx}\"",
+    "lint:fix": "eslint \"src/**/*.{ts,js,jsx}\" --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "repository": {
     "type": "git",
