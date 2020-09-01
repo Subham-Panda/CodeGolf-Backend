@@ -1,8 +1,8 @@
 {
   "name": "codegolf-backend",
   "version": "1.0.0",
-  "description": "Backend for a CodeBAsh Platform",
-  "main": "server.js",
+  "description": "Backend for a CodeBash Platform",
+  "main": "./src/server.js",
   "dependencies": {
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
