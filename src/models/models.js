@@ -1,68 +1,66 @@
 const mongoose = require('mongoose');
 
-const userschema= new mongoose.Schema({
-username:{
+const questionschema = new mongoose.Schema({
+  question: {
     type: String,
     required: [true],
-},
-round:{
+  },
+  testcases: {
+    visible: {
+      type: [String],
+    },
+    hidden: {
+      type: [String],
+    },
+  },
+  points: {
+    type: Number,
+    required: [true],
+  },
+});
+
+const userschema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: [true],
+  },
+  round: {
     type: Number,
     default: 1,
     required: [true],
-},
-rank:{
+  },
+  rank: {
     type: Number,
-},
-points:{
+  },
+  points: {
     type: Number,
     required: [true],
     default: 0,
-},
-questionsSolved:{
+  },
+  questionsSolved: {
     type: [questionschema],
-},
-timestamps:{
+  },
+  timestamps: {
     type: [Date],
-},
+  },
 });
 
-const questionschema= new mongoose.Schema({
-question:{
-    type: String,
-    required: [true],
-},
-testcases:{
-    visible:{
-        type: [String],
-    },
-    hidden:{
-        type: [String],
-    },
-},
-points:{
+const leaderboardschema = new mongoose.Schema({
+  questionNo: {
     type: Number,
     required: [true],
-},
+  },
+  users: {
+    type: [userschema],
+    required: [true],
+  },
 });
-
-const leaderboardschema= new mongoose.Schema({
-    questionNo:{
-            type: Number,
-            required: [true],
-    },
-    users:{
-        type: [userschema],
-        required: [true],
-    },
-});
-    
-
 
 const User = mongoose.model('User', userschema);
 const Question = mongoose.model('Question', questionschema);
 const Leaderboard = mongoose.model('Leaderboard', leaderboardschema);
-module.exports= {
-    User,
-    Question,
-    Leaderboard,
+module.exports = {
+  User,
+  Question,
+  Leaderboard,
 };
