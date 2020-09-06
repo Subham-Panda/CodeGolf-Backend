@@ -5,6 +5,10 @@ const questionschema = new mongoose.Schema({
     type: String,
     required: [true],
   },
+  questionNo: {
+    type: Number,
+    required: [true],
+  },
   testcases: {
     visible: {
       type: [String],
@@ -38,10 +42,7 @@ const userschema = new mongoose.Schema({
     default: 0,
   },
   questionsSolved: {
-    type: [questionschema],
-  },
-  timestamps: {
-    type: [Date],
+    type: [{ questionNo: { type: Number }, timestamp: { type: Date } }],
   },
 });
 
