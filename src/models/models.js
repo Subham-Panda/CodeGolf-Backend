@@ -1,85 +1,84 @@
 const mongoose = require('mongoose');
 
+const testCase = new mongoose.Schema({
+    inputs: {
+        type: [String],
+    },
+    outputs: {
+        type: [String],
+    },
+});
+
 const questionSchema = new mongoose.Schema({
     question: {
         type: String,
-        required: [true],
+        required: true,
     },
     questionNo: {
         type: Number,
-        required: [true],
+        required: true,
     },
     testCases: {
         visible: {
-            type: [String],
+            type: [testCase],
         },
         hidden: {
-            type: [String],
-        },
-        outputs: {
-            visible: {
-                type: [String],
-            },
-            hidden: {
-                type: [String],
-            },
+            type: [testCase],
         },
     },
     points: {
         type: Number,
-        required: [true],
+        required: true,
     },
-    bestLength: {
+    blength: {
         type: Number,
-        required: [true],
+        required: true,
     },
 });
 
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        required: [true],
+        required: true,
     },
     email: {
         type: String,
-        required: [true],
+        required: true,
     },
     loginToken: {
         type: String,
-        required: [true],
+        required: true,
     },
     round: {
         type: Number,
         default: 1,
-        required: [true],
+        required: true,
     },
     rank: {
         type: Number,
     },
     points: {
         type: Number,
-        required: [true],
+        required: true,
         default: 0,
     },
     questionsSolved: {
-        type: [
-            {
-                questionNo: { type: Number },
-                timestamp: { type: Date },
-                slength: { type: Number },
-            },
-        ],
+        type: [{
+            questionNo: { type: Number },
+            timestamp: { type: Date },
+            slength: { type: Number },
+        }],
     },
 });
 
 const leaderboardSchema = new mongoose.Schema({
     questionNo: {
         type: Number,
-        required: [true],
+        required: true,
     },
     users: {
         type: [{ user: { type: String }, score: { type: Number, default: 0 } }],
-        required: [true],
+        required: true,
         default: [],
     },
 });
