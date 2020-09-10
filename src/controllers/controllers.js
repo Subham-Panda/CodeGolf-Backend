@@ -108,7 +108,7 @@ exports.getLeaderboard = async (req, res) => {
 };
 
 // SUBMIT THE RESPONSE TO CALCULATE AND UPDATE DB AND LEADERBOARD IF REQUIRED
-exports.submit = (req, res) => {
+exports.submit = () => {
     // Check if its a check submission or final submission
     // If check submission return the required message
     // If final submission then check if better submission
