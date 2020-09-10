@@ -16,8 +16,20 @@ const questionschema = new mongoose.Schema({
     hidden: {
       type: [String],
     },
+    outputs: {
+      visible: {
+        type: [String],
+      },
+      hidden: {
+        type: [String],
+      },
+    },
   },
   points: {
+    type: Number,
+    required: [true],
+  },
+  blength: {
     type: Number,
     required: [true],
   },
@@ -25,6 +37,14 @@ const questionschema = new mongoose.Schema({
 
 const userschema = new mongoose.Schema({
   username: {
+    type: String,
+    required: [true],
+  },
+  email: {
+    type: String,
+    required: [true],
+  },
+  loginToken: {
     type: String,
     required: [true],
   },
@@ -42,7 +62,7 @@ const userschema = new mongoose.Schema({
     default: 0,
   },
   questionsSolved: {
-    type: [{ questionNo: { type: Number }, timestamp: { type: Date } }],
+    type: [{ questionNo: { type: Number }, timestamp: { type: Date }, slength: { type: Number } }],
   },
 });
 
@@ -52,8 +72,9 @@ const leaderboardschema = new mongoose.Schema({
     required: [true],
   },
   users: {
-    type: [userschema],
+    type: [{ user: { type: String }, score: { type: Number, default: 0 } }],
     required: [true],
+    default: [],
   },
 });
 
