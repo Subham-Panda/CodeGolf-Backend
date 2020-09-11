@@ -1,5 +1,13 @@
 const jwt = require('jsonwebtoken');
-const { User, Question, Leaderboard } = require('../models/models.js');
+const {
+    User,
+    Question,
+    Leaderboard,
+    Testcases,
+} = require('../models/models.js');
+
+// Function to get length of code to be considered
+const getCodeLength = (code) => code.length;
 
 // TO CHECK IF USER EXISTS AND SEND JWT
 exports.login = async (req, res) => {
@@ -52,7 +60,7 @@ exports.isLoggedIn = (req, res, next) => {
     try {
         const bearer = header.split(' ');
         const token = bearer[1];
-        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        req.userId = jwt.verify(token, process.env.JWT_SECRET);
         next();
     } catch (error) {
         res.sendStatus(401);
@@ -82,7 +90,7 @@ exports.getLeaderboard = async (req, res) => {
         const { questionNumber } = req.body;
 
         // Fetch leaderboard
-        const questionLeaderboard = await Leaderboard.find({
+        const questionLeaderboard = await Leaderboard.findOne({
             questionNo: questionNumber,
         });
 
@@ -108,12 +116,42 @@ exports.getLeaderboard = async (req, res) => {
 };
 
 // SUBMIT THE RESPONSE TO CALCULATE AND UPDATE DB AND LEADERBOARD IF REQUIRED
-exports.submit = () => {
-    // Check if its a check submission or final submission
-    // If check submission return the required message
-    // If final submission then check if better submission
-    // If better submission then return better submission exists
-    // If no better submission then send code to code executer
-    // If code executer returns true, then put new leaderboard update request on queue
-    // If code executer returns false, then return appropriate error.
+exports.submit = async (req, res) => {
+    // Send submission to compiler and get response
+    const { question, code, language } = req.body;
+    const testCases = await Testcases.findOne({ questionNo: question });
+    // eslint-disable-next-line no-undef
+    const compilerResponse = await executeCode({ code, language, testCases });
+
+    // If not success return error
+    if (compilerResponse.status === 'failure') {
+        res.json({
+            status: 'failure',
+            error: compilerResponse.error,
+        });
+    }
+
+    // Check if better submission exists for that user for that question
+    const currentUser = await User.findById(req.userId);
+    const questionStats = currentUser.questionsSolved.filter(
+        (item) => item.questionNo === question,
+    );
+    if (
+        questionStats.length === 0
+        || questionStats[0].slength > getCodeLength(code)
+    ) {
+        // If not exists update score and return success message
+        // eslint-disable-next-line no-undef
+        addLeaderboardUpdateRequest(request);
+        res.status(200).json({
+            status: 'success',
+            message: 'Submission Successful',
+        });
+    }
+
+    // Return better submission for the question already submitted
+    res.json({
+        status: 'failure',
+        message: 'Better submission already done',
+    });
 };
