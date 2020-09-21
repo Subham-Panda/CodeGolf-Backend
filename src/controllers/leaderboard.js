@@ -107,13 +107,9 @@ function task(job) {
 
     // updating leaderboards
     let newQuestionLeaderboard = db.Leaderboard.findOne({ questionNo: job.questionNo }).users;
-    // eslint-disable-next-line max-len
-    const questionLeaderboardUser = newQuestionLeaderboard[newQuestionLeaderboard.findIndex((o) => o.user === job.user)];
-    // eslint-disable-next-line max-len
-    newQuestionLeaderboard = newQuestionLeaderboard.filter((item) => item !== questionLeaderboardUser);
+    newQuestionLeaderboard = newQuestionLeaderboard.filter((item) => item.user !== job.user);
     let newLeaderboard = db.Leaderboard.findOne({ questionNo: 0 }).users;
-    const leaderboardUser = newLeaderboard[newLeaderboard.findIndex((o) => o.user === job.user)];
-    newLeaderboard = newLeaderboard.filter((item) => item !== leaderboardUser);
+    newLeaderboard = newLeaderboard.filter((item) => item.user !== job.user);
 
     newQuestionLeaderboard.push({
         user: job.user,
