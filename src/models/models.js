@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
-const testCase = new mongoose.Schema({
-    inputs: {
-        type: [String],
+const testCaseSchema = new mongoose.Schema({
+    questionNo: {
+        type: Number,
+        required: true,
     },
-    outputs: {
-        type: [String],
+    testCase: {
+        type: [{ input: { type: String }, output: { type: String } }],
     },
 });
 
@@ -18,19 +19,7 @@ const questionSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    testCases: {
-        visible: {
-            type: [testCase],
-        },
-        hidden: {
-            type: [testCase],
-        },
-    },
     points: {
-        type: Number,
-        required: true,
-    },
-    blength: {
         type: Number,
         required: true,
     },
@@ -54,21 +43,6 @@ const userSchema = new mongoose.Schema({
         default: 1,
         required: true,
     },
-    rank: {
-        type: Number,
-    },
-    points: {
-        type: Number,
-        required: true,
-        default: 0,
-    },
-    questionsSolved: {
-        type: [{
-            questionNo: { type: Number },
-            timestamp: { type: Date },
-            slength: { type: Number },
-        }],
-    },
 });
 
 const leaderboardSchema = new mongoose.Schema({
@@ -77,7 +51,13 @@ const leaderboardSchema = new mongoose.Schema({
         required: true,
     },
     users: {
-        type: [{ user: { type: String }, score: { type: Number, default: 0 } }],
+        type: [{
+            user: { type: String },
+            score: { type: Number, default: 0 },
+            questionsSolved: { type: Number, default: 0 },
+            sLength: { type: Number, default: Infinity },
+            latestTime: { type: Date },
+        }],
         required: true,
         default: [],
     },
@@ -86,8 +66,10 @@ const leaderboardSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Question = mongoose.model('Question', questionSchema);
 const Leaderboard = mongoose.model('Leaderboard', leaderboardSchema);
+const TestCase = mongoose.model('TestCase', testCaseSchema);
 module.exports = {
     User,
     Question,
     Leaderboard,
+    TestCase,
 };

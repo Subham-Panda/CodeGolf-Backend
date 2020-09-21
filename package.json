@@ -4,6 +4,7 @@
   "description": "Backend for a CodeBash Platform",
   "main": "./src/server.js",
   "dependencies": {
+    "bull": "^3.18.0",
     "dotenv": "^8.2.0",
     "esm": "^3.2.25",
     "express": "^4.17.1",
