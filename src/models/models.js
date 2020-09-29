@@ -36,6 +36,10 @@ const questionSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    hidden: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 const userSchema = new mongoose.Schema({
@@ -93,4 +97,5 @@ module.exports = {
     User,
     Question,
     Leaderboard,
+    Testcases,
 };
