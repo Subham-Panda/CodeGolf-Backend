@@ -4,8 +4,8 @@ const testCaseSchema = new mongoose.Schema({
     inputs: {
         type: [String],
     },
-    testCase: {
-        type: [{ input: { type: String }, output: { type: String } }],
+    outputs: {
+        type: [String],
     },
     questionName: {
         type: Number,
