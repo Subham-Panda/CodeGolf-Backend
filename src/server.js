@@ -1,6 +1,8 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const router = require('./routes/routes');
 
 const app = express();
 
@@ -16,9 +18,13 @@ mongoose
     })
     .then(() => console.log('DB connections successful'));
 
+app.use(cors());
+
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+
+app.use('/', router);
 
 const port = process.env.PORT || 5000;
 

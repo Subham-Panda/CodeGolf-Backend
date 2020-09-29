@@ -70,7 +70,27 @@ exports.isLoggedIn = (req, res, next) => {
 // GET DETAILS ABOUT ALL THE QUESTIONS DETAILS FROM DB
 exports.getQuestions = async (req, res) => {
     try {
-        const questions = await Question.find();
+        // const testDoc = new Question({
+        //     questionName: 'Chocolate',
+        //     question: 'question',
+        //     questionNo: 1,
+        //     testCases: {
+        //         visible: ['1111', '2222'],
+        //         hidden: ['o1111', '02222'],
+        //     },
+        //     points: 696,
+        //     blength: 0,
+        //     round: 1,
+        // });
+        // testDoc
+        //     .save()
+        //     .then((doc) => {
+        //         console.log(doc);
+        //     })
+        //     .catch(() => console.log('Error'));
+
+        const questions = await Question.find({ round: 1 });
+        // console.log('Questions: ', questions);
         res.status(200).json({
             status: 'success',
             questions,

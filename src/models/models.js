@@ -1,36 +1,38 @@
 const mongoose = require('mongoose');
 
-const testCase = new mongoose.Schema({
+const testCaseSchema = new mongoose.Schema({
     inputs: {
         type: [String],
     },
     outputs: {
         type: [String],
     },
-});
-
-const questionSchema = new mongoose.Schema({
-    question: {
-        type: String,
-        required: true,
-    },
-    questionNo: {
+    questionName: {
         type: Number,
         required: true,
     },
-    testCases: {
-        visible: {
-            type: [testCase],
-        },
-        hidden: {
-            type: [testCase],
-        },
+});
+
+const questionSchema = new mongoose.Schema({
+    questionName: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    question: {
+        type: String,
+        required: true,
     },
     points: {
         type: Number,
         required: true,
     },
     blength: {
+        type: Number,
+        required: true,
+        default: -1,
+    },
+    round: {
         type: Number,
         required: true,
     },
@@ -86,6 +88,7 @@ const leaderboardSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 const Question = mongoose.model('Question', questionSchema);
 const Leaderboard = mongoose.model('Leaderboard', leaderboardSchema);
+const Testcases = mongoose.model('Testcases', testCaseSchema);
 module.exports = {
     User,
     Question,
