@@ -8,7 +8,7 @@ const testCaseSchema = new mongoose.Schema({
         type: [String],
     },
     questionName: {
-        type: Number,
+        type: String,
         required: true,
     },
 });
@@ -26,11 +26,6 @@ const questionSchema = new mongoose.Schema({
     points: {
         type: Number,
         required: true,
-    },
-    blength: {
-        type: Number,
-        required: true,
-        default: -1,
     },
     round: {
         type: Number,
@@ -63,8 +58,8 @@ const userSchema = new mongoose.Schema({
 });
 
 const leaderboardSchema = new mongoose.Schema({
-    questionNo: {
-        type: Number,
+    questionName: {
+        type: String,
         required: true,
     },
     users: {
