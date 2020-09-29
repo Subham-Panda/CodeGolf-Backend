@@ -4,8 +4,8 @@ const testCaseSchema = new mongoose.Schema({
     inputs: {
         type: [String],
     },
-    outputs: {
-        type: [String],
+    testCase: {
+        type: [{ input: { type: String }, output: { type: String } }],
     },
     questionName: {
         type: Number,
@@ -60,21 +60,6 @@ const userSchema = new mongoose.Schema({
         default: 1,
         required: true,
     },
-    rank: {
-        type: Number,
-    },
-    points: {
-        type: Number,
-        required: true,
-        default: 0,
-    },
-    questionsSolved: {
-        type: [{
-            questionNo: { type: Number },
-            timestamp: { type: Date },
-            slength: { type: Number },
-        }],
-    },
 });
 
 const leaderboardSchema = new mongoose.Schema({
@@ -83,7 +68,13 @@ const leaderboardSchema = new mongoose.Schema({
         required: true,
     },
     users: {
-        type: [{ user: { type: String }, score: { type: Number, default: 0 } }],
+        type: [{
+            user: { type: String },
+            score: { type: Number, default: 0 },
+            questionsSolved: { type: Number, default: 0 },
+            sLength: { type: Number, default: Infinity },
+            latestTime: { type: Date },
+        }],
         required: true,
         default: [],
     },
