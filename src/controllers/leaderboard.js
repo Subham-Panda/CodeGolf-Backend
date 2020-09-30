@@ -7,7 +7,15 @@ const db = require('../models/models');
 
 const leaderboard = db.Leaderboard.find().toArray();
 const question = db.Question.find().toArray();
-const mainLeaderboard = leaderboard[leaderboard.findIndex((o) => o.questionName === 'Global')].users;
+const questionPoints = {};
+question.forEach((item) => {
+    questionPoints[item.questionName] = item.points;
+});
+const allLeaderboards = {};
+leaderboard.forEach((item) => {
+    allLeaderboards[item.questionName] = item.users;
+});
+const mainLeaderboard = allLeaderboards.Global;
 const ranks = {};
 mainLeaderboard.forEach((item, i) => {
     ranks[item.user] = i;
@@ -49,8 +57,8 @@ function sorting(arr) {
 
 function task(job) {
     // get question and questionLeaderboard
-    const { points } = question[question.findIndex((o) => o.questionName === job.questionName)];
-    const questionLeaderboard = leaderboard[leaderboard.findIndex((o) => o.questionName === job.questionName)].users;
+    const points = questionPoints[job.questionName];
+    const questionLeaderboard = allLeaderboards[job.questionName];
 
     // check for first submission
     if (!job.hasSolved) {
@@ -71,7 +79,7 @@ function task(job) {
     // looping through every user who has solved that question in case bestLength changes including the current user
     questionLeaderboard.map((u) => {
         const { user } = u;
-        const index = ranks.user;
+        const index = ranks[user];
         let { sLength } = u;
         const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
         let { latestTime } = mainLeaderboard[index];
@@ -122,7 +130,8 @@ function task(job) {
         { users: mainLeaderboard },
     );
 
-    leaderboard[leaderboard.findIndex((o) => o.questionName === job.questionName)].users = questionLeaderboard;
+    // mainLeaderboard gets updated itself, updating local copy of question-wise leaderboard
+    allLeaderboards[job.questionName] = questionLeaderboard;
 }
 Queue.process(async (job) => {
     task(job.data);
