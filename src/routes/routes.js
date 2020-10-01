@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/login', controller.login);
 // router.use(controller.isLoggedIn);
 router.get('/questions', controller.getQuestions);
-router.get('/leaderboard', controller.getLeaderboard);
+router.get('/leaderboards', controller.getLeaderboards);
 router.post('/submissions', controller.submit);
 
 module.exports = router;

@@ -6,7 +6,6 @@ const {
     Testcases,
 } = require('../models/models.js');
 const executeCode = require('./code-executor');
-
 const updateLeaderboard = require('./leaderboard');
 
 // TO CHECK IF USER EXISTS AND SEND JWT
@@ -85,28 +84,15 @@ exports.getQuestions = async (req, res) => {
 };
 
 // GET THE LEADER BOARD FOR A PARTICULAR QUESTION
-exports.getLeaderboard = async (req, res) => {
+exports.getLeaderboards = async (req, res) => {
     try {
-        // Get question number for req body
-        const { questionName } = req.body;
-
         // Fetch leaderboard
-        const questionLeaderboard = await Leaderboard.findOne({
-            questionName,
-        });
+        const leaderboards = await Leaderboard.find();
 
-        // Send error message if invalid question number
-        if (!questionLeaderboard) {
-            res.json({
-                status: 'failure',
-                error: 'Invalid question number',
-            });
-        }
-
-        // Else send success and the leaderboard
+        // Else send success and the leaderboards
         res.status(200).json({
             status: 'success',
-            questionLeaderboard,
+            leaderboards,
         });
     } catch (error) {
         res.status(401).json({
