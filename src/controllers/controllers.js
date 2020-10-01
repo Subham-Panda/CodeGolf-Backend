@@ -18,7 +18,7 @@ exports.login = async (req, res) => {
     try {
         // Get token id of user from body
         const { id } = req.body;
-        const valid = idValidation.validate(id);
+        const valid = idValidation.validate({ id });
         if (valid.error) {
             return res.status(400).json({
                 success: true,
@@ -122,7 +122,9 @@ exports.submit = async (req, res) => {
         questionName, code, language, submitTime,
     } = req.body;
 
-    const valid = submissionValidation.validate(questionName, code, language, submitTime);
+    const valid = submissionValidation.validate({
+        questionName, code, language, submitTime,
+    });
     if (valid.error) {
         return res.status(400).json({
             success: true,
