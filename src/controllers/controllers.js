@@ -1,4 +1,9 @@
+import {
+    idValidation, submissionValidation,
+} from './joi';
+
 const jwt = require('jsonwebtoken');
+
 const {
     User,
     Question,
@@ -13,6 +18,14 @@ exports.login = async (req, res) => {
     try {
         // Get token id of user from body
         const { id } = req.body;
+        const valid = idValidation.validate(id);
+        if (valid.error) {
+            return res.status(400).json({
+                success: true,
+                error: 'validationError',
+                message: valid.error.message,
+            });
+        }
 
         // Check if user exists
         const currentUser = await User.findById(id);
@@ -108,6 +121,16 @@ exports.submit = async (req, res) => {
     const {
         questionName, code, language, submitTime,
     } = req.body;
+
+    const valid = submissionValidation.validate(questionName, code, language, submitTime);
+    if (valid.error) {
+        return res.status(400).json({
+            success: true,
+            error: 'validationError',
+            message: valid.error.message,
+        });
+    }
+
     const testCases = await Testcases.findOne({ questionName });
 
     const inputArray = testCases.inputs;
