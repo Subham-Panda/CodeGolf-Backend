@@ -5,6 +5,7 @@ const {
     Leaderboard,
     Testcases,
 } = require('../models/models.js');
+const executeCode = require('./code-executor');
 
 // Function to get length of code to be considered
 const getCodeLength = (code) => code.length;
@@ -107,11 +108,11 @@ exports.getQuestions = async (req, res) => {
 exports.getLeaderboard = async (req, res) => {
     try {
         // Get question number for req body
-        const { questionNumber } = req.body;
+        const { questionName } = req.body;
 
         // Fetch leaderboard
         const questionLeaderboard = await Leaderboard.findOne({
-            questionNo: questionNumber,
+            questionName,
         });
 
         // Send error message if invalid question number
@@ -137,41 +138,78 @@ exports.getLeaderboard = async (req, res) => {
 
 // SUBMIT THE RESPONSE TO CALCULATE AND UPDATE DB AND LEADERBOARD IF REQUIRED
 exports.submit = async (req, res) => {
-    // Send submission to compiler and get response
-    const { question, code, language } = req.body;
-    const testCases = await Testcases.findOne({ questionNo: question });
-    // eslint-disable-next-line no-undef
-    const compilerResponse = await executeCode({ code, language, testCases });
+    // // Send submission to compiler and get response
+    // const { questionName, code, language } = req.body;
+    // const testCases = await Testcases.findOne({ questionName });
 
-    // If not success return error
-    if (compilerResponse.status === 'failure') {
-        res.json({
-            status: 'failure',
-            error: compilerResponse.error,
-        });
-    }
+    // // res.json({
+    // //     status: 'success',
+    // //     testCases,
+    // // });
 
-    // Check if better submission exists for that user for that question
-    const currentUser = await User.findById(req.userId);
-    const questionStats = currentUser.questionsSolved.filter(
-        (item) => item.questionNo === question,
-    );
-    if (
-        questionStats.length === 0
-        || questionStats[0].slength > getCodeLength(code)
-    ) {
-        // If not exists update score and return success message
-        // eslint-disable-next-line no-undef
-        addLeaderboardUpdateRequest(request);
-        res.status(200).json({
-            status: 'success',
-            message: 'Submission Successful',
-        });
-    }
+    // const inputArray = testCases.inputs;
+    // const outputArray = testCases.outputs;
 
-    // Return better submission for the question already submitted
+    // const testCasesCE = [];
+
+    // inputArray.forEach((input, i) => {
+    //     const obj = {};
+    //     obj.input = input;
+    //     obj.output = outputArray[i];
+    //     testCasesCE.push(obj);
+    // });
+
+    // res.json({
+    //     status: 'success',
+    //     testCasesCE,
+    // });
+
+    const testCases = [
+        {
+            input: '',
+            output: 'hello\n',
+        },
+    ];
+
+    // const code = "print('hello')";
+    // const language = 'Python';
+    const { code, language } = req.body;
+
+    const compilerResponse = await executeCode({ language, code, testCases });
     res.json({
-        status: 'failure',
-        message: 'Better submission already done',
+        status: 'success',
+        compilerResponse,
     });
+
+    // // If not success return error
+    // if (compilerResponse.status === 'failure') {
+    //     res.json({
+    //         status: 'failure',
+    //         error: compilerResponse.error,
+    //     });
+    // }
+
+    // // Check if better submission exists for that user for that question
+    // const currentUser = await User.findById(req.userId);
+    // const questionStats = currentUser.questionsSolved.filter(
+    //     (item) => item.questionNo === question,
+    // );
+    // if (
+    //     questionStats.length === 0
+    //     || questionStats[0].slength > getCodeLength(code)
+    // ) {
+    //     // If not exists update score and return success message
+    //     // eslint-disable-next-line no-undef
+    //     addLeaderboardUpdateRequest(request);
+    //     res.status(200).json({
+    //         status: 'success',
+    //         message: 'Submission Successful',
+    //     });
+    // }
+
+    // // Return better submission for the question already submitted
+    // res.json({
+    //     status: 'failure',
+    //     message: 'Better submission already done',
+    // });
 };
