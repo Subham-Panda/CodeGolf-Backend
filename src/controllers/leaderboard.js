@@ -5,30 +5,51 @@ const Queue = new Bull('queue');
 
 const db = require('../models/models');
 
-const leaderboard = db.Leaderboard.find().toArray();
-const question = db.Question.find().toArray();
-const questionPoints = {};
-question.forEach((item) => {
-    questionPoints[item.questionName] = item.points;
-});
+let leaderboard = [];
+let question = [];
 const allLeaderboards = {};
-leaderboard.forEach((item) => {
-    allLeaderboards[item.questionName] = item.users;
-});
-const mainLeaderboard = allLeaderboards.Global;
 const ranks = {};
-mainLeaderboard.forEach((item, i) => {
-    ranks[item.user] = i;
-});
+const questionPoints = {};
+let mainLeaderboard = [];
 
-const updateLeaderboard = async (user, questionName, time, sLength, hasSolved) => {
+const getLeaderboardAndQuestion = async () => {
+    leaderboard = await db.Leaderboard.find();
+    question = await db.Question.find();
+    question.forEach((item) => {
+        questionPoints[item.questionName] = item.points;
+    });
+    leaderboard.forEach((item) => {
+        allLeaderboards[item.questionName] = item.users;
+    });
+    mainLeaderboard = allLeaderboards.Global;
+    // mainLeaderboard = [
+    //     {
+    //         username: 'Subham',
+    //         score: 500,
+    //         questionsSolved: 14,
+    //         sLength: 800,
+    //         latestTime: Date.now(),
+    //     },
+    // ];
+    mainLeaderboard.forEach((item, i) => {
+        ranks[item.username] = i;
+    });
+};
+getLeaderboardAndQuestion();
+
+const updateLeaderboard = async (
+    username,
+    questionName,
+    time,
+    sLength,
+    hasSolved,
+) => {
     const data = {
-        user,
+        username,
         questionName,
         time,
         sLength,
         hasSolved,
-
     };
     await Queue.add(data);
 };
@@ -55,7 +76,7 @@ function sorting(arr) {
     arr.sort(compareScore);
 }
 
-function task(job) {
+async function task(job) {
     // get question and questionLeaderboard
     const points = questionPoints[job.questionName];
     const questionLeaderboard = allLeaderboards[job.questionName];
@@ -63,7 +84,7 @@ function task(job) {
     // check for first submission
     if (!job.hasSolved) {
         questionLeaderboard.push({
-            user: job.user,
+            username: job.username,
             score: 0,
             questionsSolved: 1,
             sLength: 0,
@@ -78,13 +99,13 @@ function task(job) {
 
     // looping through every user who has solved that question in case bestLength changes including the current user
     questionLeaderboard.map((u) => {
-        const { user } = u;
-        const index = ranks[user];
+        const { username } = u;
+        const index = ranks[username];
         let { sLength } = u;
         const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
         let { latestTime } = mainLeaderboard[index];
         let lTime = u.latestTime;
-        if (user === job.user) {
+        if (username === job.username) {
             sLength = job.sLength;
             latestTime = job.time;
             lTime = job.time;
@@ -93,14 +114,14 @@ function task(job) {
         const totalLength = mainLeaderboard[index].sLength - u.sLength + sLength;
         const totalScore = mainLeaderboard[index].score - u.score + score;
         mainLeaderboard[index] = {
-            user,
+            username,
             score: totalScore,
             questionsSolved,
             sLength: totalLength,
             latestTime,
         };
         return {
-            user,
+            username,
             score,
             questionsSolved: 0,
             sLength,
@@ -115,17 +136,17 @@ function task(job) {
 
     // updating ranks
     mainLeaderboard.forEach((item, i) => {
-        ranks[item.user] = i;
+        ranks[item.username] = i;
     });
 
     // db.update()
-    db.Leaderboard.findOneAndUpdate(
+    await db.Leaderboard.findOneAndUpdate(
         { questionName: job.questionName },
         { users: questionLeaderboard },
     );
 
     // db.update()
-    db.Leaderboard.findOneAndUpdate(
+    await db.Leaderboard.findOneAndUpdate(
         { questionName: 'Global' },
         { users: mainLeaderboard },
     );
@@ -135,7 +156,7 @@ function task(job) {
 }
 
 Queue.process(async (job) => {
-    task(job.data);
+    await task(job.data);
 });
 
 module.exports = updateLeaderboard;

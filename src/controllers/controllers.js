@@ -19,7 +19,7 @@ exports.login = async (req, res) => {
 
         // Send error message is user doesn't exist
         if (!currentUser) {
-            res.status(403).json({
+            return res.status(403).json({
                 status: 'failure',
                 error: 'invalid login url',
             });
@@ -29,12 +29,12 @@ exports.login = async (req, res) => {
         const token = jwt.sign({ id }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             token,
         });
     } catch (error) {
-        res.status(401).json({
+        return res.status(401).json({
             status: 'failure',
             error: 'unsuccessful login',
         });
@@ -42,17 +42,17 @@ exports.login = async (req, res) => {
 };
 
 // CHECK IF USER IS LOGGED IN
+// eslint-disable-next-line consistent-return
 exports.isLoggedIn = (req, res, next) => {
     // Get authorization header
     const header = req.headers.authorization;
 
     // Send error message if no authorization header
     if (!header) {
-        res.status(403).json({
+        return res.status(403).json({
             status: 'failure',
             error: 'not logged in',
         });
-        return;
     }
 
     // If authorization header exists get the bearer token and verify it
@@ -62,7 +62,7 @@ exports.isLoggedIn = (req, res, next) => {
         req.userId = jwt.verify(token, process.env.JWT_SECRET);
         next();
     } catch (error) {
-        res.sendStatus(401);
+        return res.sendStatus(401);
     }
 };
 
@@ -71,12 +71,12 @@ exports.getQuestions = async (req, res) => {
     try {
         const questions = await Question.find({ round: 1 });
         // console.log('Questions: ', questions);
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             questions,
         });
     } catch (error) {
-        res.status(402).json({
+        return res.status(402).json({
             status: 'failure',
             error: 'Error fetching questions',
         });
@@ -90,12 +90,12 @@ exports.getLeaderboards = async (req, res) => {
         const leaderboards = await Leaderboard.find();
 
         // Else send success and the leaderboards
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             leaderboards,
         });
     } catch (error) {
-        res.status(401).json({
+        return res.status(401).json({
             status: 'failure',
             error: 'Error fetching leaderboard',
         });
@@ -153,21 +153,21 @@ exports.submit = async (req, res) => {
                 code.length,
                 currentUserInLeaderboard,
             );
-            res.status(200).json({
+            return res.status(200).json({
                 status: 'success',
                 message: 'Submission Successful',
                 compilerResponse: compilerResponseJSON,
             });
         }
         // Return better submission for the question already submitted
-        res.json({
+        return res.json({
             status: 'failure',
             message: 'Better submission already done',
             compilerResponse: compilerResponseJSON,
         });
     }
 
-    res.json({
+    return res.json({
         status: 'failure',
         message: 'Did not pass all test cases',
         compilerResponse: compilerResponseJSON,
