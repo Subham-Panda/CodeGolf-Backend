@@ -64,7 +64,7 @@ const leaderboardSchema = new mongoose.Schema({
     },
     users: {
         type: [{
-            user: { type: String },
+            username: { type: String },
             score: { type: Number, default: 0 },
             questionsSolved: { type: Number, default: 0 },
             sLength: { type: Number, default: Infinity },

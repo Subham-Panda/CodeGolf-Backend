@@ -3,6 +3,7 @@ import CodeExecutor from 'code-executor';
 const codeExecutor = new CodeExecutor('myExecutor', 'redis://127.0.0.1:6379');
 
 const executeCode = async (language, code, testCases) => {
+    console.log('Language', language);
     const input = {
         language,
         code,
@@ -11,8 +12,6 @@ const executeCode = async (language, code, testCases) => {
     };
 
     const results = await codeExecutor.runCode(input);
-
-    console.log(results);
     return results;
 };
 

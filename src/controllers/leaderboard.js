@@ -21,7 +21,7 @@ mainLeaderboard.forEach((item, i) => {
     ranks[item.user] = i;
 });
 
-exports.leaderboard = async (user, questionName, time, sLength, hasSolved) => {
+const updateLeaderboard = async (user, questionName, time, sLength, hasSolved) => {
     const data = {
         user,
         questionName,
@@ -133,6 +133,9 @@ function task(job) {
     // mainLeaderboard gets updated itself, updating local copy of question-wise leaderboard
     allLeaderboards[job.questionName] = questionLeaderboard;
 }
+
 Queue.process(async (job) => {
     task(job.data);
 });
+
+module.exports = updateLeaderboard;
