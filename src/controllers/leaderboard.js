@@ -61,7 +61,6 @@ function sorting(arr) {
     const compareTime = (a, b) => a.latestTime - b.latestTime;
     const compareLength = (a, b) => {
         if (a.sLength !== b.sLength) return a.sLength - b.sLength;
-
         return compareTime(a, b);
     };
     const compareNo = (a, b) => {
