@@ -43,6 +43,7 @@ const updateLeaderboard = async (
     time,
     sLength,
     hasSolved,
+    code,
 ) => {
     const data = {
         username,
@@ -50,6 +51,7 @@ const updateLeaderboard = async (
         time,
         sLength,
         hasSolved,
+        code,
     };
     await Queue.add(data);
 };
@@ -89,6 +91,7 @@ async function task(job) {
             questionsSolved: 1,
             sLength: 0,
             latestTime: job.time,
+            code: job.code,
         });
     }
     // check bestLength
@@ -105,10 +108,12 @@ async function task(job) {
         const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
         let { latestTime } = mainLeaderboard[index];
         let lTime = u.latestTime;
+        let { code } = u;
         if (username === job.username) {
             sLength = job.sLength;
             latestTime = job.time;
             lTime = job.time;
+            code = job.code;
         }
         const score = (bestLength / sLength) * points;
         const totalLength = mainLeaderboard[index].sLength - u.sLength + sLength;
@@ -119,6 +124,7 @@ async function task(job) {
             questionsSolved,
             sLength: totalLength,
             latestTime,
+            code,
         };
         return {
             username,
@@ -126,6 +132,7 @@ async function task(job) {
             questionsSolved: 0,
             sLength,
             latestTime: lTime,
+            code,
         };
     });
     // sort(gameLeaderboard)
