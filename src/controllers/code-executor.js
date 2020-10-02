@@ -1,4 +1,4 @@
-import { CodeExecutor } from 'code-executor';
+const { CodeExecutor } = require('code-executor');
 
 const codeExecutor = new CodeExecutor('myExecutor', process.env.REDIS_URL);
 

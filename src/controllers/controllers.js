@@ -28,7 +28,7 @@ exports.login = async (req, res) => {
         }
 
         // Check if user exists
-        const currentUser = await User.findById(id);
+        const currentUser = await User.find({ loginToken: id });
 
         // Send error message is user doesn't exist
         if (!currentUser) {

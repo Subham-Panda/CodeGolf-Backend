@@ -1,7 +1,7 @@
 /* eslint-disable max-len */
 const Bull = require('bull');
 
-const Queue = new Bull('queue');
+const Queue = new Bull('queue', process.env.REDIS_URL);
 
 const db = require('../models/models');
 
