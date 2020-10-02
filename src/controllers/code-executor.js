@@ -1,6 +1,6 @@
 import { CodeExecutor } from 'code-executor';
 
-const codeExecutor = new CodeExecutor('myExecutor', 'redis://127.0.0.1:6379');
+const codeExecutor = new CodeExecutor('myExecutor', process.env.REDIS_URL);
 
 const executeCode = async (language, code, testCases) => {
     console.log('Language:\n', language);
