@@ -3,12 +3,6 @@ import { CodeExecutor } from 'code-executor';
 const codeExecutor = new CodeExecutor('myExecutor', process.env.REDIS_URL);
 
 const executeCode = async (language, code, testCases) => {
-    console.log('Language:\n', language);
-    console.log('\n\n');
-    console.log('Code:\n', code);
-    console.log('\n\n');
-    console.log('Test Cases:\n', testCases[0], testCases[1]);
-    console.log('\n\n');
     const input = {
         language,
         code,

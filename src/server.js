@@ -1,12 +1,12 @@
-const express = require('express');
 const dotenv = require('dotenv');
+dotenv.config({ path: './.env' });
+
+const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const router = require('./routes/routes');
 
 const app = express();
-
-dotenv.config({ path: './.env' });
 
 const DB = process.env.DB_URL.replace('<password>', process.env.DB_PASSWORD);
 
