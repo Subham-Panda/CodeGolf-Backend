@@ -123,16 +123,16 @@ exports.submit = async (req, res) => {
     });
 
     const compilerResponse = await executeCode(language, code, testCasesCE);
-    const compilerResponseJSON = JSON.parse(compilerResponse);
 
     const currentUser = await User.findById(req.userId);
 
     const currentQsLeaderboard = await Leaderboard.find({ questionName });
+    console.log(currentQsLeaderboard);
     const currentUserInLeaderboard = currentQsLeaderboard.users.find(
         (user) => user.username === currentUser.username,
     );
 
-    const allTestCasesPass = compilerResponseJSON.tests.find(
+    const allTestCasesPass = compilerResponse.tests.find(
         (test) => test.remarks !== 'Pass',
     );
 
@@ -156,20 +156,25 @@ exports.submit = async (req, res) => {
             return res.status(200).json({
                 status: 'success',
                 message: 'Submission Successful',
-                compilerResponse: compilerResponseJSON,
+                compilerResponse,
             });
         }
         // Return better submission for the question already submitted
         return res.json({
             status: 'failure',
             message: 'Better submission already done',
-            compilerResponse: compilerResponseJSON,
+            compilerResponse,
         });
     }
 
     return res.json({
         status: 'failure',
         message: 'Did not pass all test cases',
-        compilerResponse: compilerResponseJSON,
+        compilerResponse,
     });
 };
+
+// exports.putDummyData = async (req, res) => {
+//     const newDoc = await Leaderboard.create(req.body);
+//     res.send(newDoc);
+// }
