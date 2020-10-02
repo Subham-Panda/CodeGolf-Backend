@@ -1,6 +1,6 @@
 import {
     idValidation, submissionValidation,
-} from './joi';
+} from './validation';
 
 const jwt = require('jsonwebtoken');
 
