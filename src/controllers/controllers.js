@@ -153,7 +153,7 @@ exports.submit = async (req, res) => {
 
     const currentQsLeaderboard = await Leaderboard.find({ questionName });
     console.log(currentQsLeaderboard);
-    const currentUserInLeaderboard = currentQsLeaderboard.users.find(
+    const currentUserInLeaderboard = currentQsLeaderboard[0].users.find(
         (user) => user.username === currentUser.username,
     );
 
