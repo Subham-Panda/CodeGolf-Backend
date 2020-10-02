@@ -69,6 +69,7 @@ const leaderboardSchema = new mongoose.Schema({
             questionsSolved: { type: Number, default: 0 },
             sLength: { type: Number, default: Infinity },
             latestTime: { type: Date },
+            code: { type: String, default: '' },
         }],
         required: true,
         default: [],

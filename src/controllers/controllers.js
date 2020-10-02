@@ -82,7 +82,7 @@ exports.isLoggedIn = (req, res, next) => {
 // GET DETAILS ABOUT ALL THE QUESTIONS DETAILS FROM DB
 exports.getQuestions = async (req, res) => {
     try {
-        const questions = await Question.find({ round: 1 });
+        const questions = await Question.find({ round: process.env.ROUND });
         // console.log('Questions: ', questions);
         return res.status(200).json({
             status: 'success',
@@ -177,6 +177,7 @@ exports.submit = async (req, res) => {
                 submitTime,
                 code.length,
                 currentUserInLeaderboard,
+                code,
             );
             return res.status(200).json({
                 status: 'success',
