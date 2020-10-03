@@ -1,7 +1,7 @@
 import { idValidation, submissionValidation } from './validation';
 
 const jwt = require('jsonwebtoken');
-const data = require('./data.json');
+// const data = require('./data.json');
 
 const {
     User,
@@ -96,6 +96,7 @@ exports.getUser = async (req, res) => {
     } catch (error) {
         console.log(error);
     }
+    return null;
 };
 
 // GET DETAILS ABOUT ALL THE QUESTIONS DETAILS FROM DB

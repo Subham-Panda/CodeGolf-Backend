@@ -138,6 +138,7 @@ async function task(job) {
         } catch (error) {
             console.log(error);
         }
+        return null;
     });
 
     // sort(gameLeaderboard)
@@ -167,6 +168,6 @@ async function task(job) {
     allLeaderboards[job.questionName] = questionLeaderboard;
 }
 
-Queue.process(async (job) => await task(job.data));
+Queue.process(async (job) => task(job.data));
 
 module.exports = updateLeaderboard;
