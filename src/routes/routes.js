@@ -9,6 +9,6 @@ router.post('/login', controller.login);
 router.get('/questions', controller.getQuestions);
 router.get('/leaderboards', controller.getLeaderboards);
 router.post('/submissions', controller.submit);
-router.get('/solutions', controller.getSolutions);
+router.get('/solutions/:request', controller.getSolutions);
 
 module.exports = router;

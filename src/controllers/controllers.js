@@ -207,15 +207,14 @@ exports.submit = async (req, res) => {
 
 exports.getSolutions = async (req, res) => {
     const {
-        questionName, userID,
-    } = req.body;
+        questionName, username,
+    } = req.params;
 
     try {
         // Fetch leaderboard
         const leaderboard = await Leaderboard.findOne({ questionName });
-        const currentUser = await User.findById(userID);
 
-        const index = leaderboard.users.indexOf((o) => o.username === currentUser.username);
+        const index = leaderboard.users.indexOf((o) => o.username === username);
         const worseLeaderboard = leaderboard.users.slice(index, leaderboard.users.length);
 
         return res.status(200).json({
@@ -225,7 +224,7 @@ exports.getSolutions = async (req, res) => {
     } catch (error) {
         return res.status(401).json({
             status: 'failure',
-            error: 'Error fetching leaderboard or user',
+            error: 'Error fetching leaderboard',
         });
     }
 };
