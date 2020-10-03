@@ -11,7 +11,7 @@ const roundtwo = async () => {
             { round: 3 },
         );
     }
-    await db.Leaderboard.update({ questionName: 'Global' }, { $set: { users: [] } });
+    await db.Leaderboard.updateOne({ questionName: 'Global' }, { $set: { users: [] } });
 };
 
 roundtwo();
