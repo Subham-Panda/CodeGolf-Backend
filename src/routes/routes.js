@@ -10,5 +10,6 @@ router.use(controller.isLoggedIn);
 router.get('/questions', controller.getQuestions);
 router.get('/leaderboards', controller.getLeaderboards);
 router.post('/submissions', controller.submit);
+router.get('/solutions/:request', controller.getSolutions);
 
 module.exports = router;

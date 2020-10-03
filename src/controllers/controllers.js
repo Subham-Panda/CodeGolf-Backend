@@ -287,4 +287,29 @@ exports.submit = async (req, res) => {
 //         users,
 //     });
 //     res.send(newDoc);
-// };
+// }
+
+exports.getSolutions = async (req, res) => {
+    const {
+        request,
+    } = req.params;
+    const { questionName } = request;
+    const { username } = request;
+    try {
+        // Fetch leaderboard
+        const leaderboard = await Leaderboard.findOne({ questionName });
+
+        const index = leaderboard.users.indexOf((o) => o.username === username);
+        const worseLeaderboard = leaderboard.users.slice(index, leaderboard.users.length);
+
+        return res.status(200).json({
+            status: 'success',
+            worseLeaderboard,
+        });
+    } catch (error) {
+        return res.status(401).json({
+            status: 'failure',
+            error: 'Error fetching leaderboard',
+        });
+    }
+};
