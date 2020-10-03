@@ -88,6 +88,7 @@ exports.getUser = async (req, res) => {
             return res.json({
                 status: 'success',
                 user,
+                currentRound: process.env.ROUND,
             });
         }
         return res.json({
