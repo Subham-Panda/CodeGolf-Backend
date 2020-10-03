@@ -216,7 +216,7 @@ exports.getSolutions = async (req, res) => {
         const currentUser = await User.findById(userID);
 
         const index = leaderboard.users.indexOf((o) => o.username === currentUser.username);
-        const worseLeaderboard = leaderboard.users.slice(index, leaderboard.length);
+        const worseLeaderboard = leaderboard.users.slice(index, leaderboard.users.length);
 
         return res.status(200).json({
             status: 'success',
