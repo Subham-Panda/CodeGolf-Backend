@@ -22,15 +22,6 @@ const getLeaderboardAndQuestion = async () => {
         allLeaderboards[item.questionName] = item.users;
     });
     mainLeaderboard = allLeaderboards.Global;
-    // mainLeaderboard = [
-    //     {
-    //         username: 'Subham',
-    //         score: 500,
-    //         questionsSolved: 14,
-    //         sLength: 800,
-    //         latestTime: Date.now(),
-    //     },
-    // ];
     mainLeaderboard.forEach((item, i) => {
         ranks[item.username] = i;
     });
@@ -82,6 +73,19 @@ async function task(job) {
     const points = questionPoints[job.questionName];
     let questionLeaderboard = allLeaderboards[job.questionName];
 
+    // check bestLength
+    let bestLength;
+    console.log('LENGTH: ', questionLeaderboard.length);
+    if (questionLeaderboard.length === 0) {
+        bestLength = job.sLength;
+    } else {
+        bestLength = questionLeaderboard[0].sLength;
+    }
+    if (job.sLength < bestLength) {
+        bestLength = job.sLength;
+        console.log('SETTING BEST LENGTH');
+    }
+
     // check for first submission
     if (!job.hasSolved) {
         questionLeaderboard.push({
@@ -93,17 +97,14 @@ async function task(job) {
             code: job.code,
         });
     }
-    // check bestLength
-    let bestLength = questionLeaderboard[0].sLength;
-    if (job.sLength < bestLength) {
-        bestLength = job.sLength;
-    }
 
     // looping through every user who has solved that question in case bestLength changes including the current user
     questionLeaderboard = questionLeaderboard.map((u) => {
         try {
             const { username } = u;
             const index = ranks[username];
+            console.log('RANKS: ', ranks);
+            console.log('USERNAME: ', username);
             let { sLength } = u;
             const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
             let { latestTime } = mainLeaderboard[index];
@@ -134,6 +135,8 @@ async function task(job) {
                 latestTime: lTime,
                 code,
             };
+            console.log('SLENGTH: ', sLength);
+            console.log(obj);
             return obj;
         } catch (error) {
             console.log(error);

@@ -190,7 +190,7 @@ exports.submit = async (req, res) => {
         console.log('REACHED CHECKPOINT 1');
         if (
             !currentUserInLeaderboard
-            || currentUserInLeaderboard.slength > code.length
+            || currentUserInLeaderboard.sLength > code.length
         ) {
             // If not exists update score and return success message
             // OR
