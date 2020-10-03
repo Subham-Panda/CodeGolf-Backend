@@ -1,8 +1,7 @@
-import {
-    idValidation, submissionValidation,
-} from './validation';
+import { idValidation, submissionValidation } from './validation';
 
 const jwt = require('jsonwebtoken');
+const data = require('./data.json');
 
 const {
     User,
@@ -17,8 +16,8 @@ const updateLeaderboard = require('./leaderboard');
 exports.login = async (req, res) => {
     try {
         // Get token id of user from body
-        const { id } = req.body;
-        const valid = idValidation.validate({ id });
+        const { loginToken } = req.body;
+        const valid = idValidation.validate({ id: loginToken });
         if (valid.error) {
             return res.status(400).json({
                 success: true,
@@ -28,9 +27,10 @@ exports.login = async (req, res) => {
         }
 
         // Check if user exists
-        const currentUser = await User.find({ loginToken: id });
+        const currentUser = await User.find({ loginToken });
 
         // Send error message is user doesn't exist
+
         if (!currentUser) {
             return res.status(403).json({
                 status: 'failure',
@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
         }
 
         // Sign token and send it if user exists
-        const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+        const token = jwt.sign({ loginToken }, process.env.JWT_SECRET, {
             expiresIn: process.env.JWT_EXPIRES_IN,
         });
         return res.status(200).json({
@@ -58,10 +58,11 @@ exports.login = async (req, res) => {
 // eslint-disable-next-line consistent-return
 exports.isLoggedIn = (req, res, next) => {
     // Get authorization header
-    const header = req.headers.authorization;
+    const token = req.headers.authorization;
+    // console.log('ISLOGGEDDIN: ', token);
 
     // Send error message if no authorization header
-    if (!header) {
+    if (!token) {
         return res.status(403).json({
             status: 'failure',
             error: 'not logged in',
@@ -70,12 +71,30 @@ exports.isLoggedIn = (req, res, next) => {
 
     // If authorization header exists get the bearer token and verify it
     try {
-        const bearer = header.split(' ');
-        const token = bearer[1];
-        req.userId = jwt.verify(token, process.env.JWT_SECRET);
+        const loginToken = jwt.verify(token, process.env.JWT_SECRET);
+        req.loginToken = loginToken.loginToken;
         next();
     } catch (error) {
         return res.sendStatus(401);
+    }
+};
+
+exports.getUser = async (req, res) => {
+    try {
+        const token = req.headers.authorization;
+        const loginToken = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ loginToken: loginToken.loginToken });
+        if (user) {
+            return res.json({
+                status: 'success',
+                user,
+            });
+        }
+        return res.json({
+            status: 'failure',
+        });
+    } catch (error) {
+        console.log(error);
     }
 };
 
@@ -123,7 +142,10 @@ exports.submit = async (req, res) => {
     } = req.body;
 
     const valid = submissionValidation.validate({
-        questionName, code, language, submitTime,
+        questionName,
+        code,
+        language,
+        submitTime,
     });
     if (valid.error) {
         return res.status(400).json({
@@ -142,26 +164,28 @@ exports.submit = async (req, res) => {
 
     inputArray.forEach((input, i) => {
         const obj = {};
-        obj.input = input;
-        obj.output = outputArray[i];
+        obj.input = input.replace(/\r/g, '');
+        obj.output = outputArray[i].replace(/\r/g, '');
         testCasesCE.push(obj);
     });
 
     const compilerResponse = await executeCode(language, code, testCasesCE);
-
-    const currentUser = await User.findById(req.userId);
+    // console.log('LOGIN TOKEN IN REQ: ', req.loginToken);
+    const currentUser = await User.findOne({ loginToken: req.loginToken });
+    console.log(currentUser);
 
     const currentQsLeaderboard = await Leaderboard.find({ questionName });
     console.log(currentQsLeaderboard);
     const currentUserInLeaderboard = currentQsLeaderboard[0].users.find(
         (user) => user.username === currentUser.username,
     );
-
-    const allTestCasesPass = compilerResponse.tests.find(
+    console.log('currentUserInLeaderboard', currentUserInLeaderboard);
+    const allTestCasesPass = !compilerResponse.tests.find(
         (test) => test.remarks !== 'Pass',
     );
-
+    // console.log('allTEstCases PAss', allTestCasesPass);
     if (allTestCasesPass) {
+        console.log('REACHED CHECKPOINT 1');
         if (
             !currentUserInLeaderboard
             || currentUserInLeaderboard.slength > code.length
@@ -171,14 +195,17 @@ exports.submit = async (req, res) => {
             // If better submission then update score and return success message
 
             // eslint-disable-next-line no-undef
+            console.log('REACHED CHECKPOINT 2');
+            const hasSolved = !!currentUserInLeaderboard;
             updateLeaderboard(
                 currentUser.username,
                 questionName,
                 submitTime,
                 code.length,
-                currentUserInLeaderboard,
+                hasSolved,
                 code,
             );
+            console.log('REACHED CHECKPOINT 3');
             return res.status(200).json({
                 status: 'success',
                 message: 'Submission Successful',
@@ -192,7 +219,7 @@ exports.submit = async (req, res) => {
             compilerResponse,
         });
     }
-
+    // console.log('reached here');
     return res.json({
         status: 'failure',
         message: 'Did not pass all test cases',
@@ -201,6 +228,62 @@ exports.submit = async (req, res) => {
 };
 
 // exports.putDummyData = async (req, res) => {
-//     const newDoc = await Leaderboard.create(req.body);
+//     // const newDoc = await Leaderboard.create(req.body);
+//     // res.send(newDoc);
+
+//     // const newDocs = [];
+//     // await Object.keys(data).forEach(async (email) => {
+//     //     const splits = data[email].split('/');
+//     //     const loginToken = splits[splits.length - 1];
+//     //     const obj = {
+//     //         username: email.split('@')[0],
+//     //         email,
+//     //         loginToken,
+//     //         round: 1,
+//     //     };
+//     //     const newDoc = await Leaderboard.create(obj);
+//     //     newDocs.push[newDoc];
+//     // });
+
+//     const users = [];
+//     Object.keys(data).forEach((email) => {
+//         const username = email.split('@')[0];
+//         users.push({
+//             username,
+//             score: 0,
+//             questionsSolved: 0,
+//             sLength: 9999999,
+//             latestTime: Date.now(),
+//             code: '',
+//         });
+//     });
+//     users.push({
+//         username: 'Ashikka',
+//         score: 5000,
+//         questionsSolved: 1,
+//         sLength: 20,
+//         latestTime: Date.now(),
+//         code: '',
+//     });
+//     users.push({
+//         username: 'Arushi',
+//         score: 3000,
+//         questionsSolved: 1,
+//         sLength: 30,
+//         latestTime: Date.now(),
+//         code: '',
+//     });
+//     users.push({
+//         username: 'Subham',
+//         score: 2000,
+//         questionsSolved: 1,
+//         sLength: 40,
+//         latestTime: Date.now(),
+//         code: '',
+//     });
+//     const newDoc = await Leaderboard.create({
+//         questionName: 'Global',
+//         users,
+//     });
 //     res.send(newDoc);
-// }
+// };

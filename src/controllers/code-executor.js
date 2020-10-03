@@ -11,7 +11,6 @@ const executeCode = async (language, code, testCases) => {
     };
 
     const results = await codeExecutor.runCode(input);
-    console.log('RESULTS: ', results);
     return results;
 };
 

@@ -80,7 +80,7 @@ function sorting(arr) {
 async function task(job) {
     // get question and questionLeaderboard
     const points = questionPoints[job.questionName];
-    const questionLeaderboard = allLeaderboards[job.questionName];
+    let questionLeaderboard = allLeaderboards[job.questionName];
 
     // check for first submission
     if (!job.hasSolved) {
@@ -100,40 +100,46 @@ async function task(job) {
     }
 
     // looping through every user who has solved that question in case bestLength changes including the current user
-    questionLeaderboard.map((u) => {
-        const { username } = u;
-        const index = ranks[username];
-        let { sLength } = u;
-        const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
-        let { latestTime } = mainLeaderboard[index];
-        let lTime = u.latestTime;
-        let { code } = u;
-        if (username === job.username) {
-            sLength = job.sLength;
-            latestTime = job.time;
-            lTime = job.time;
-            code = job.code;
+    questionLeaderboard = questionLeaderboard.map((u) => {
+        try {
+            const { username } = u;
+            const index = ranks[username];
+            let { sLength } = u;
+            const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
+            let { latestTime } = mainLeaderboard[index];
+            let lTime = u.latestTime;
+            let { code } = u;
+            if (username === job.username) {
+                sLength = job.sLength;
+                latestTime = job.time;
+                lTime = job.time;
+                code = job.code;
+            }
+            const score = (bestLength / sLength) * points;
+            const totalLength = mainLeaderboard[index].sLength - u.sLength + sLength;
+            const totalScore = mainLeaderboard[index].score - u.score + score;
+            mainLeaderboard[index] = {
+                username,
+                score: totalScore,
+                questionsSolved,
+                sLength: totalLength,
+                latestTime,
+                code,
+            };
+            const obj = {
+                username,
+                score,
+                questionsSolved: 0,
+                sLength,
+                latestTime: lTime,
+                code,
+            };
+            return obj;
+        } catch (error) {
+            console.log(error);
         }
-        const score = (bestLength / sLength) * points;
-        const totalLength = mainLeaderboard[index].sLength - u.sLength + sLength;
-        const totalScore = mainLeaderboard[index].score - u.score + score;
-        mainLeaderboard[index] = {
-            username,
-            score: totalScore,
-            questionsSolved,
-            sLength: totalLength,
-            latestTime,
-            code,
-        };
-        return {
-            username,
-            score,
-            questionsSolved: 0,
-            sLength,
-            latestTime: lTime,
-            code,
-        };
     });
+
     // sort(gameLeaderboard)
     sorting(mainLeaderboard);
 
@@ -161,8 +167,6 @@ async function task(job) {
     allLeaderboards[job.questionName] = questionLeaderboard;
 }
 
-Queue.process(async (job) => {
-    await task(job.data);
-});
+Queue.process(async (job) => await task(job.data));
 
 module.exports = updateLeaderboard;
