@@ -207,9 +207,10 @@ exports.submit = async (req, res) => {
 
 exports.getSolutions = async (req, res) => {
     const {
-        questionName, username,
+        request,
     } = req.params;
-
+    const { questionName } = request;
+    const { username } = request;
     try {
         // Fetch leaderboard
         const leaderboard = await Leaderboard.findOne({ questionName });
