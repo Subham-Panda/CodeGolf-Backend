@@ -108,7 +108,7 @@ async function task(job) {
             let { sLength } = u;
             let j = 0;
             const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
-            if (questionsSolved === 0) {
+            if (mainLeaderboard[index].questionsSolved === 0) {
                 j = 1;
             }
             let { latestTime } = mainLeaderboard[index];
