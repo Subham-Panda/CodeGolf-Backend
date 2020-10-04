@@ -106,7 +106,11 @@ async function task(job) {
             console.log('RANKS: ', ranks);
             console.log('USERNAME: ', username);
             let { sLength } = u;
+            let j = 0;
             const questionsSolved = mainLeaderboard[index].questionsSolved + u.questionsSolved;
+            if (questionsSolved === 0) {
+                j = 1;
+            }
             let { latestTime } = mainLeaderboard[index];
             let lTime = u.latestTime;
             let { code } = u;
@@ -117,7 +121,11 @@ async function task(job) {
                 code = job.code;
             }
             const score = (bestLength / sLength) * points;
-            const totalLength = mainLeaderboard[index].sLength - u.sLength + sLength;
+            let totalLength = mainLeaderboard[index].sLength - u.sLength + sLength;
+            if (j === 1) {
+                totalLength = sLength;
+            }
+
             const totalScore = mainLeaderboard[index].score - u.score + score;
             mainLeaderboard[index] = {
                 username,
