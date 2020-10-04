@@ -56,7 +56,7 @@ exports.login = async (req, res) => {
 
 // CHECK IF USER IS LOGGED IN
 // eslint-disable-next-line consistent-return
-exports.isLoggedIn = (req, res, next) => {
+exports.isLoggedIn = async (req, res, next) => {
     // Get authorization header
     const token = req.headers.authorization;
     // console.log('ISLOGGEDDIN: ', token);
@@ -72,6 +72,8 @@ exports.isLoggedIn = (req, res, next) => {
     // If authorization header exists get the bearer token and verify it
     try {
         const loginToken = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findOne({ loginToken: loginToken.loginToken });
+        req.user = user;
         req.loginToken = loginToken.loginToken;
         next();
     } catch (error) {
@@ -120,9 +122,22 @@ exports.getQuestions = async (req, res) => {
 // GET THE LEADER BOARD FOR A PARTICULAR QUESTION
 exports.getLeaderboards = async (req, res) => {
     try {
+        const { user } = req;
         // Fetch leaderboard
         const leaderboards = await Leaderboard.find();
-
+        leaderboards.forEach((leaderboard) => {
+            let indexOfUser = leaderboard.users.findIndex(
+                (induser) => induser.username === user.username,
+            );
+            indexOfUser = indexOfUser === -1 ? Infinity : indexOfUser;
+            leaderboard.users.forEach(
+                (induser, i) => {
+                    if (i < indexOfUser) {
+                        delete induser.code;
+                    }
+                },
+            );
+        });
         // Else send success and the leaderboards
         return res.status(200).json({
             status: 'success',
@@ -247,61 +262,60 @@ exports.submit = async (req, res) => {
 //     //     newDocs.push[newDoc];
 //     // });
 
-//     const users = [];
-//     Object.keys(data).forEach((email) => {
-//         const username = email.split('@')[0];
-//         users.push({
-//             username,
-//             score: 0,
-//             questionsSolved: 0,
-//             sLength: 9999999,
-//             latestTime: Date.now(),
-//             code: '',
-//         });
-//     });
-//     users.push({
-//         username: 'Ashikka',
-//         score: 5000,
-//         questionsSolved: 1,
-//         sLength: 20,
-//         latestTime: Date.now(),
-//         code: '',
-//     });
-//     users.push({
-//         username: 'Arushi',
-//         score: 3000,
-//         questionsSolved: 1,
-//         sLength: 30,
-//         latestTime: Date.now(),
-//         code: '',
-//     });
-//     users.push({
-//         username: 'Subham',
-//         score: 2000,
-//         questionsSolved: 1,
-//         sLength: 40,
-//         latestTime: Date.now(),
-//         code: '',
-//     });
-//     const newDoc = await Leaderboard.create({
-//         questionName: 'Global',
-//         users,
-//     });
-//     res.send(newDoc);
+//     // const users = [];
+//     // Object.keys(data).forEach((email) => {
+//     //     const username = email.split('@')[0];
+//     //     users.push({
+//     //         username,
+//     //         score: 0,
+//     //         questionsSolved: 0,
+//     //         sLength: 9999999,
+//     //         latestTime: Date.now(),
+//     //         code: '',
+//     //     });
+//     // });
+//     // users.push({
+//     //     username: 'Ashikka',
+//     //     score: 5000,
+//     //     questionsSolved: 1,
+//     //     sLength: 20,
+//     //     latestTime: Date.now(),
+//     //     code: '',
+//     // });
+//     // users.push({
+//     //     username: 'Arushi',
+//     //     score: 3000,
+//     //     questionsSolved: 1,
+//     //     sLength: 30,
+//     //     latestTime: Date.now(),
+//     //     code: '',
+//     // });
+//     // users.push({
+//     //     username: 'Subham',
+//     //     score: 2000,
+//     //     questionsSolved: 1,
+//     //     sLength: 40,
+//     //     latestTime: Date.now(),
+//     //     code: '',
+//     // });
+//     // const newDoc = await Leaderboard.create({
+//     //     questionName: 'Global',
+//     //     users,
+//     // });
+//     // res.send(newDoc);
 // }
 
 exports.getSolutions = async (req, res) => {
-    const {
-        request,
-    } = req.params;
-    const { questionName } = request;
-    const { username } = request;
+    const { questionName, username } = req.body;
     try {
         // Fetch leaderboard
         const leaderboard = await Leaderboard.findOne({ questionName });
 
         const index = leaderboard.users.indexOf((o) => o.username === username);
-        const worseLeaderboard = leaderboard.users.slice(index, leaderboard.users.length);
+        const worseLeaderboard = leaderboard.users.slice(
+            index,
+            leaderboard.users.length,
+        );
 
         return res.status(200).json({
             status: 'success',
