@@ -87,7 +87,8 @@ async function task(job) {
     }
 
     // check for first submission
-    if (!job.hasSolved) {
+
+    if (questionLeaderboard.indexOf((o) => o.user === job.username) === -1) {
         questionLeaderboard.push({
             username: job.username,
             score: 0,
