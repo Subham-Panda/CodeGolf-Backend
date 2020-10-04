@@ -143,8 +143,6 @@ async function task(job) {
                 latestTime: lTime,
                 code,
             };
-            console.log('SLENGTH: ', sLength);
-            console.log(obj);
             return obj;
         } catch (error) {
             console.log(error);

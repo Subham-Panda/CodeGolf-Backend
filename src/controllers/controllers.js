@@ -119,31 +119,37 @@ exports.getQuestions = async (req, res) => {
     }
 };
 
-// GET THE LEADER BOARD FOR A PARTICULAR QUESTION
+// GET THE LEADER BOARD FOR A PARTICULAR QUESTIONs
 exports.getLeaderboards = async (req, res) => {
     try {
         const { user } = req;
         // Fetch leaderboard
         const leaderboards = await Leaderboard.find();
         leaderboards.forEach((leaderboard) => {
-            if (process.env.ROUND === 1) {
+            if (process.env.ROUND === '1') {
                 // eslint-disable-next-line no-param-reassign
-                leaderboard.users.forEach((induser) => delete induser.code);
+                leaderboard.users = leaderboard.users.map((user) => {
+                    user.code = '';
+                    return user;
+                });
+                console.log(leaderboard.users);
             } else {
                 let indexOfUser = leaderboard.users.findIndex(
                     (induser) => induser.username === user.username,
                 );
                 indexOfUser = indexOfUser === -1 ? Infinity : indexOfUser;
-                leaderboard.users.forEach(
+                leaderboard.users = leaderboard.users.map(
                     (induser, i) => {
                         if (i < indexOfUser) {
                             // eslint-disable-next-line no-param-reassign
-                            delete induser.code;
+                            induser.code = '';
                         }
+                        return induser;
                     },
                 );
             }
         });
+        // console.log("LEADERBOARDS: ",leaderboards)
         // Else send success and the leaderboards
         return res.status(200).json({
             status: 'success',
@@ -193,6 +199,16 @@ exports.submit = async (req, res) => {
     });
 
     const compilerResponse = await executeCode(language, code, testCasesCE);
+    compilerResponse.tests = compilerResponse.tests.map((test, i) => {
+        if (i == 0) {
+            return test;
+        }
+        test.input = '';
+        test.expectedOutput = '';
+        return test;
+    });
+    console.log('COMPILER RESPONSE: ', compilerResponse);
+
     // console.log('LOGIN TOKEN IN REQ: ', req.loginToken);
     const currentUser = await User.findOne({ loginToken: req.loginToken });
     console.log(currentUser);
