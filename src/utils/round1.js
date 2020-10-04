@@ -16,6 +16,8 @@ const roundone = async () => {
     await User.updateMany({}, { $set: { round: 2 } });
     await Leaderboard.updateMany({}, { users: [] });
     const leaderboard = await Leaderboard.findOne({ questionName: 'Global' });
+    const usersArray = [];
+    let i;
     for (i = 0; i < leaderboard.users.length; i += 1) {
         const name = leaderboard.users[i].username;
         usersArray.push({
@@ -29,5 +31,6 @@ const roundone = async () => {
     await Leaderboard.updateOne(
         { questionName: 'Global' },
         { $set: { users: usersArray } },
+    );
 };
 roundone();
