@@ -126,18 +126,23 @@ exports.getLeaderboards = async (req, res) => {
         // Fetch leaderboard
         const leaderboards = await Leaderboard.find();
         leaderboards.forEach((leaderboard) => {
-            let indexOfUser = leaderboard.users.findIndex(
-                (induser) => induser.username === user.username,
-            );
-            indexOfUser = indexOfUser === -1 ? Infinity : indexOfUser;
-            leaderboard.users.forEach(
-                (induser, i) => {
-                    if (i < indexOfUser) {
-                        // eslint-disable-next-line no-param-reassign
-                        delete induser.code;
-                    }
-                },
-            );
+            if (process.env.ROUND === 1) {
+                // eslint-disable-next-line no-param-reassign
+                leaderboard.users.forEach((induser) => delete induser.code);
+            } else {
+                let indexOfUser = leaderboard.users.findIndex(
+                    (induser) => induser.username === user.username,
+                );
+                indexOfUser = indexOfUser === -1 ? Infinity : indexOfUser;
+                leaderboard.users.forEach(
+                    (induser, i) => {
+                        if (i < indexOfUser) {
+                            // eslint-disable-next-line no-param-reassign
+                            delete induser.code;
+                        }
+                    },
+                );
+            }
         });
         // Else send success and the leaderboards
         return res.status(200).json({
