@@ -131,7 +131,7 @@ exports.getLeaderboards = async (req, res) => {
                 leaderboard.users = leaderboard.users.map((user) => {
                     user.code = '';
                     return user;
-                })
+                });
                 console.log(leaderboard.users);
             } else {
                 let indexOfUser = leaderboard.users.findIndex(
@@ -198,7 +198,7 @@ exports.submit = async (req, res) => {
         testCasesCE.push(obj);
     });
 
-    let compilerResponse = await executeCode(language, code, testCasesCE);
+    const compilerResponse = await executeCode(language, code, testCasesCE);
     compilerResponse.tests = compilerResponse.tests.map((test, i) => {
         if (i == 0) {
             return test;
@@ -207,8 +207,7 @@ exports.submit = async (req, res) => {
         test.expectedOutput = '';
         return test;
     });
-    console.log("COMPILER RESPONSE: ", compilerResponse);
-    
+    console.log('COMPILER RESPONSE: ', compilerResponse);
 
     // console.log('LOGIN TOKEN IN REQ: ', req.loginToken);
     const currentUser = await User.findOne({ loginToken: req.loginToken });
