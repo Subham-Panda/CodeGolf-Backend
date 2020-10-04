@@ -133,6 +133,7 @@ exports.getLeaderboards = async (req, res) => {
             leaderboard.users.forEach(
                 (induser, i) => {
                     if (i < indexOfUser) {
+                        // eslint-disable-next-line no-param-reassign
                         delete induser.code;
                     }
                 },
