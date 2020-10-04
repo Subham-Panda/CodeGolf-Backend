@@ -1,6 +1,6 @@
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const { User } = require('../models/models');
+const { User, Leaderboard } = require('../models/models');
 
 dotenv.config({ path: './.env' });
 const DB = process.env.DB_URL.replace('<password>', process.env.DB_PASSWORD);
@@ -14,6 +14,18 @@ mongoose
 
 const roundone = async () => {
     await User.updateMany({}, { $set: { round: 2 } });
+    await Leaderboard.updateMany({}, { users: [] });
+    const leaderboard = await Leaderboard.findOne({ questionName: 'Global' });
+    for (i = 0; i < leaderboard.users.length; i += 1) {
+        const name = leaderboard.users[i].username;
+        usersArray.push({
+            username: name,
+            score: 0,
+            sLength: 9999999,
+            code: '',
+            latestTime: Date.now(),
+        });
+
 };
 
 roundone();
