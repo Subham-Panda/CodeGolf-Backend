@@ -128,8 +128,8 @@ exports.getLeaderboards = async (req, res) => {
         leaderboards.forEach((leaderboard) => {
             if (process.env.ROUND === '1') {
                 // eslint-disable-next-line no-param-reassign
-                leaderboard.users = leaderboard.users.map((user) => {
-                    user.code = '';
+                leaderboard.users = leaderboard.users.map((user1) => {
+                    user1.code = '';
                     return user;
                 });
                 console.log(leaderboard.users);
