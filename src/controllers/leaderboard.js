@@ -88,7 +88,7 @@ async function task(job) {
 
     // check for first submission
 
-    if (questionLeaderboard.indexOf((o) => o.username === job.username) === -1) {
+    if (questionLeaderboard.findIndex((o) => o.username === job.username) === -1) {
         questionLeaderboard.push({
             username: job.username,
             score: 0,
