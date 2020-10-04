@@ -14,8 +14,8 @@ mongoose
 
 const roundone = async () => {
     await User.updateMany({}, { $set: { round: 2 } });
-    await Leaderboard.updateMany({}, { users: [] });
     const leaderboard = await Leaderboard.findOne({ questionName: 'Global' });
+    await Leaderboard.updateMany({}, { users: [] });
     const usersArray = [];
     let i;
     for (i = 0; i < leaderboard.users.length; i += 1) {
