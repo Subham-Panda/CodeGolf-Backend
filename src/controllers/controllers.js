@@ -149,6 +149,7 @@ exports.getLeaderboards = async (req, res) => {
                 );
             }
         });
+        // console.log("LEADERBOARDS: ",leaderboards)
         // Else send success and the leaderboards
         return res.status(200).json({
             status: 'success',
@@ -206,6 +207,7 @@ exports.submit = async (req, res) => {
         test.expectedOutput = '';
         return test;
     });
+    console.log("COMPILER RESPONSE: ", compilerResponse);
     
 
     // console.log('LOGIN TOKEN IN REQ: ', req.loginToken);
