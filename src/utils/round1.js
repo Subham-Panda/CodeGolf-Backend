@@ -25,7 +25,9 @@ const roundone = async () => {
             code: '',
             latestTime: Date.now(),
         });
-
+    }
+    await Leaderboard.updateOne(
+        { questionName: 'Global' },
+        { $set: { users: usersArray } },
 };
-
 roundone();
